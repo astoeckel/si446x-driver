@@ -1,0 +1,13 @@
+[Unit]
+Description=Enable 433MHz Transceiver
+
+[Service]
+ExecStart=/usr/bin/enable_transceiver
+Restart=always
+RestartSec=720min
+
+[Install]
+WantedBy=multi-user.target
+
+
+
