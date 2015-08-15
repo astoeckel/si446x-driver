@@ -22,6 +22,10 @@ bool handleErr(Status res)
 			printf("Timeout");
 			exit(1);
 			break;
+		case Status::ERR_OUT_OF_RANGE:
+			printf("Out of range!");
+			exit(1);
+			break;
 		case Status::BUSY:
 			return false;
 		case Status::OK:
@@ -66,11 +70,13 @@ int main(void)
 	       info.romid);
 
 	// Configure GPIO
-	handleErr(radio.gpioConfig(GpioConfig().gpio<0>(GpioMode::DRIVE1, true)
-	    .gpio<1>(GpioMode::DRIVE0, true)
-	    .gpio<2>(GpioMode::DRIVE1, true)
-	    .gpio<3>(GpioMode::DRIVE0, true)
-	    .strength(GpioDriveStrength::LOW)));
+	handleErr(
+	    radio.gpioConfig(GpioConfig()
+	                         .gpio<0>(GpioMode::DRIVE0, true)  // TX-EN
+	                         .gpio<1>(GpioMode::DRIVE1, true)  // RX-EN
+	                         .gpio<2>(GpioMode::INPUT, false)  // NC
+	                         .gpio<3>(GpioMode::INPUT, false)  // Input data
+	                         .strength(GpioDriveStrength::LOW)));
 
 	GpioConfig gconf;
 	handleErr(radio.gpioConfig(gconf));
@@ -81,6 +87,17 @@ int main(void)
 
 	printf("gpio0: %d, gpio1: %d\n", static_cast<uint8_t>(gconf.gpioVal<0>()),
 	       static_cast<uint8_t>(gconf.gpioVal<1>()));
+
+	// Configure the RF frequency to 433.92 MHz
+	handleErr(radio.setFrequency(433.92));
+
+	// Set the modulation type
+	handleErr(radio.setModulation(ModType::OOK, ModSource::DIRECT,
+	                              TxDirectModeGpio::GPIO3,
+	                              TxDirectModeType::ASYNC));
+
+	// Start TX
+	handleErr(radio.changeState(State::TX));
 
 	return 0;
 }

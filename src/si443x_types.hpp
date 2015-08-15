@@ -60,7 +60,12 @@ enum class Status : int {
 	/**
      * Returned if a synchronous command fails to finish within a certain time.
      */
-	ERR_TIMEOUT = -3
+	ERR_TIMEOUT = -3,
+
+	/**
+     * Returned if a value is out of range.
+     */
+	ERR_OUT_OF_RANGE = -4
 };
 
 /**
@@ -161,7 +166,7 @@ enum class GpioMode : uint8_t {
 	HOP_TABLE_WRAP = 0x27
 };
 
-enum class NirqMode {
+enum class NirqMode : uint8_t {
 	DONOTHING = 0x00,
 	TRISTATE = 0x01,
 	DRIVE0 = 0x02,
@@ -187,7 +192,7 @@ enum class NirqMode {
 	NIRQ = 0x27
 };
 
-enum class SdoMode {
+enum class SdoMode : uint8_t {
 	DONOTHING = 0x00,
 	TRISTATE = 0x01,
 	DRIVE0 = 0x02,
@@ -212,14 +217,152 @@ enum class SdoMode {
 	CCA = 0x1B,
 };
 
-enum class GpioDriveStrength {
+enum class GpioDriveStrength : uint8_t {
 	HIGH = 0x00,
 	MED_HIGH = 0x20,
 	MED_LOW = 0x40,
 	LOW = 0x60
 };
 
+enum class TxDirectModeType : uint8_t {
+	SYNC = 0 << 7,
+	ASYNC = 1 << 7
+};
+
+enum class TxDirectModeGpio : uint8_t {
+	GPIO0 = 0 << 5,
+	GPIO1 = 1 << 5,
+	GPIO2 = 2 << 5,
+	GPIO3 = 3 << 5
+};
+
+enum class ModSource : uint8_t {
+	PACKET = 0 << 3,
+	DIRECT = 1 << 3,
+	PSEUDO = 2 << 3
+};
+
+enum class ModType : uint8_t {
+	CW = 0 << 0,
+	OOK = 1 << 0,
+	_2FSK = 2 << 0,
+	_2GFSK = 3 << 0,
+	_4FSK = 4 << 0,
+	_4GFSK = 5 << 0
+};
+
+enum class State : uint8_t {
+	NOCHANGE = 0,
+	SLEEP = 1,
+	SPI_ACTIVE = 2,
+	READY = 3,
+	TX_TUNE = 5,
+	RX_TUNE = 6,
+	TX = 7,
+	RX = 8
+};
+
 #pragma pack(push, 1)
+
+struct uint24 {
+	uint8_t a1;
+	uint8_t a2;
+	uint8_t a3;
+
+	uint24() {}
+	constexpr uint24(uint32_t v)
+	    : a1((v & 0xFF0000) >> 16),
+	      a2((v & 0x00FF00) >> 8),
+	      a3((v & 0x0000FF) >> 0)
+	{
+	}
+	constexpr uint24(uint8_t a1, uint8_t a2, uint8_t a3)
+	    : a1(a1), a2(a2), a3(a3)
+	{
+	}
+
+	uint32_t asInt() { return (a1 << 16) | (a2 << 8) | a3; }
+};
+
+template <size_t Size>
+struct PropertyDescr {
+	static constexpr size_t size = Size;
+	uint8_t group;
+	uint8_t id;
+	constexpr PropertyDescr(uint8_t group, uint8_t id) : group(group), id(id) {}
+	constexpr PropertyDescr(uint16_t v)
+	    : group((v & 0xFF00) >> 8), id((v & 0x00FF) >> 0)
+	{
+	}
+};
+
+struct Property8 : public PropertyDescr<1> {
+	using PropertyDescr<1>::PropertyDescr;
+};
+struct Property16 : public PropertyDescr<2> {
+	using PropertyDescr<2>::PropertyDescr;
+};
+struct Property24 : public PropertyDescr<3> {
+	using PropertyDescr<3>::PropertyDescr;
+};
+struct Property32 : public PropertyDescr<4> {
+	using PropertyDescr<4>::PropertyDescr;
+};
+
+namespace Property {
+constexpr Property8 GLOBAL_XO_TUNE = 0x0000;
+constexpr Property8 GLOBAL_CLK_CFG = 0x0001;
+constexpr Property8 GLOBAL_LOW_BATT_THRESH = 0x0002;
+constexpr Property8 GLOBAL_CONFIG = 0x0003;
+constexpr Property8 GLOBAL_WUT_CONFIG = 0x0004;
+constexpr Property16 GLOBAL_WUT_M = 0x0005;
+constexpr Property8 GLOBAL_WUT_R = 0x0007;
+constexpr Property8 GLOBAL_WUT_LDC = 0x0008;
+constexpr Property8 GLOBAL_WUT_CAL = 0x0009;
+
+constexpr Property8 INT_CTL_ENABLE = 0x0100;
+constexpr Property8 INT_CTL_PH_ENABLE = 0x0101;
+constexpr Property8 INT_CTL_MODEM_ENABLE = 0x0102;
+constexpr Property8 INT_CTL_CHIP_ENABLE = 0x0103;
+
+constexpr Property8 FRR_CTL_A_MODE = 0x02000;
+constexpr Property8 FRR_CTL_B_MODE = 0x02001;
+constexpr Property8 FRR_CTL_C_MODE = 0x02002;
+constexpr Property8 FRR_CTL_D_MODE = 0x02003;
+
+constexpr Property8 PREAMBLE_TX_LENGTH = 0x1000;
+constexpr Property8 PREAMBLE_CONFIG_STD_1 = 0x1001;
+constexpr Property8 PREAMBLE_CONFIG_NSTD = 0x1002;
+constexpr Property8 PREAMBLE_CONFIG_STD_2 = 0x1003;
+constexpr Property8 PREAMBLE_CONFIG = 0x1004;
+constexpr Property32 PREAMBLE_PATTERN = 0x1005;
+constexpr Property8 PREAMBLE_POSTAMBLE_CONFIG = 0x1009;
+constexpr Property32 PREAMBLE_POSTAMBLE_PATTERN = 0x100a;
+
+constexpr Property8 SYNC_CONFIG = 0x1100;
+constexpr Property32 SYNC_BITS = 0x1101;
+constexpr Property8 SYNC_CONFIG2 = 0x1105;
+
+constexpr Property8 PKT_CRC_CONFIG = 0x1200;
+constexpr Property16 PKT_WHT_POLY = 0x1201;
+constexpr Property16 PKT_WHT_SEED = 0x1203;
+constexpr Property8 PKT_WHT_BIT_NUM = 0x1205;
+constexpr Property8 PKT_CONFIG1 = 0x1206;
+constexpr Property8 PKT_CONFIG2 = 0x1207;
+constexpr Property8 PKT_LEN = 0x1208;
+constexpr Property8 PKT_LEN_FIELD_SOURCE = 0x1209;
+constexpr Property8 PKT_LEN_ADJUST = 0x120A;
+constexpr Property8 PKT_TX_THRESHOLD = 0x120B;
+constexpr Property8 PKT_RX_THRESHOLD = 0x120C;
+// TODO Other PKT Stuff
+
+constexpr Property8 MODEM_MOD_TYPE = 0x2000;
+constexpr Property8 MODEM_CLKGEN_BAND = 0x2051;
+
+constexpr Property8 FREQ_CONTROL_INTE = 0x4000;
+constexpr Property24 FREQ_CONTROL_FRAC = 0x4001;
+};
+
 struct PartInfo {
 	uint8_t chiprev;
 	uint16_t part;
@@ -241,6 +384,36 @@ struct PowerUp {
 	uint8_t boot_options;
 	uint8_t xtal_options;
 	uint32_t xo_freq;
+};
+
+template <typename Payload>
+struct SetPropertyRaw {
+	uint8_t group;
+	uint8_t num_props;
+	uint8_t start_prop;
+	Payload payload;
+
+	SetPropertyRaw() {}
+	SetPropertyRaw(uint8_t group, uint8_t num_props, uint8_t start_prop,
+	               Payload payload)
+	    : group(group),
+	      num_props(num_props),
+	      start_prop(start_prop),
+	      payload(payload)
+	{
+	}
+};
+
+struct GetPropertyRaw {
+	uint8_t group;
+	uint8_t num_props;
+	uint8_t start_prop;
+
+	GetPropertyRaw() {}
+	GetPropertyRaw(uint8_t group, uint8_t num_props, uint8_t start_prop)
+	    : group(group), num_props(num_props), start_prop(start_prop)
+	{
+	}
 };
 
 struct GpioConfigRaw {
@@ -356,7 +529,6 @@ public:
 
 #pragma pack(pop)
 
-
 static inline constexpr uint16_t endian16(uint16_t v)
 {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
@@ -366,7 +538,7 @@ static inline constexpr uint16_t endian16(uint16_t v)
 #endif
 }
 
-static inline constexpr uint16_t endian32(uint32_t v)
+static inline constexpr uint32_t endian32(uint32_t v)
 {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 	return (v >> 24) | ((v << 8) & 0x00FF0000) | ((v >> 8) & 0x0000FF00) |
@@ -376,16 +548,9 @@ static inline constexpr uint16_t endian32(uint32_t v)
 #endif
 }
 
-static inline constexpr uint16_t endian(uint16_t v)
-{
-	return endian16(v);
-}
+static inline constexpr uint16_t endian(uint16_t v) { return endian16(v); }
 
-static inline constexpr uint16_t endian(uint32_t v)
-{
-	return endian32(v);
-}
-
+static inline constexpr uint32_t endian(uint32_t v) { return endian32(v); }
 }
 
 #endif /* _SI443X_TYPES_HPP_ */

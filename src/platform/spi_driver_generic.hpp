@@ -107,8 +107,7 @@ private:
 	 * successfully and Status::ERR_IO if there has been a general I/O
 	 * error.
 	 */
-	Status sendImpl(uint8_t cmd, uint8_t argsSize,
-	                         const uint8_t *argsBuf)
+	Status sendImpl(uint8_t cmd, uint8_t argsSize, const uint8_t *argsBuf)
 	{
 		return static_cast<SpiDriverImpl *>(this)
 		    ->sendImpl(cmd, argsSize, argsBuf);
@@ -130,6 +129,20 @@ private:
 		return static_cast<SpiDriverImpl *>(this)->receiveImpl(resSize, resBuf);
 	}
 
+	/**
+	 * Used internally to return the size of the underlying type of a pointer.
+	 */
+	static constexpr size_t size(nullptr_t) { return 0; }
+
+	/**
+	 * Used internally to return the size of the underlying type of a pointer.
+	 */
+	template <typename T>
+	static constexpr size_t size(const T t)
+	{
+		return sizeof(*t);
+	}
+
 public:
 	/**
 	 * Sends a new command to the Si443x.
@@ -145,8 +158,7 @@ public:
 	template <typename Args>
 	Status send(Command cmd, const Args args = nullptr)
 	{
-		return sendImpl(static_cast<uint8_t>(cmd),
-		                args == nullptr ? 0 : sizeof(Args),
+		return sendImpl(static_cast<uint8_t>(cmd), size(args),
 		                (const uint8_t *)(args));
 	}
 
@@ -165,8 +177,7 @@ public:
 	template <typename Result>
 	Status receive(Result res = nullptr)
 	{
-		return receiveImpl(res == nullptr ? 0 : sizeof(Result),
-		                   (uint8_t *)(res));
+		return receiveImpl(size(res), (uint8_t *)(res));
 	}
 
 	/**
@@ -208,8 +219,7 @@ public:
 	 * @param res is a pointer at the buffer containing the result.
 	 */
 	template <typename Args, typename Result>
-	Status exec(Command cmd, const Args args = nullptr,
-	                     Result res = nullptr)
+	Status exec(Command cmd, const Args args = nullptr, Result res = nullptr)
 	{
 		// Send the actual command
 		Status status = send(cmd, args);
@@ -297,8 +307,7 @@ private:
 	/**
 	 * Implementation of the sendImpl method as defined by SpiDriverGeneric.
 	 */
-	Status sendImpl(uint8_t cmd, uint8_t argsSize,
-	                         const uint8_t *argsBuf)
+	Status sendImpl(uint8_t cmd, uint8_t argsSize, const uint8_t *argsBuf)
 	{
 		uint8_t *buf = static_cast<uint8_t *>(alloca(argsSize + 1));
 		buf[0] = cmd;
