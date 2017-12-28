@@ -23,6 +23,7 @@ The below wiring diagram shows how the RFM26W module should be wired to a
 Raspberry Pi if the `main.cpp` program is used.
 
 ![Wiring diagram](doc/RFM26W_433MHz_Transceiver_RPI.png)
+
 ([Link to PDF version](https://raw.githubusercontent.com/astoeckel/si443x-driver/master/doc/RFM26W_433MHz_Transceiver_RPI.pdf))
 
 In the above diagram, the RFM26W GPIO3 input is connected to GPIO pin 22 on the
