@@ -13,7 +13,7 @@ input pin on the Si443x module, making it a drop-in replacement for many cheap
 ## Usage with a Raspberry Pi
 
 The `main.cpp` provided with this repository brings the transceiver on a
-[https://www.pollin.de/p/funkmodul-hoperf-rfm26w-433-mhz-tx-rx-810311](RFM26W)
+[RFM26W](https://www.pollin.de/p/funkmodul-hoperf-rfm26w-433-mhz-tx-rx-810311)
 module to a transmit-only state with a frequency of 443.92 MHz. The carrier is
 toggled on and off using the GPIO3 input on the RFM26W module. This frequency
 and mode of operation (OOK) is used by a variety of wirelessly controlled
@@ -22,8 +22,8 @@ devices.
 The below wiring diagram shows how the RFM26W module should be wired to a
 Raspberry Pi if the `main.cpp` program is used.
 
-[!doc/RFM26W_433MHz_Transceiver_RPI.png](Wiring diagram)
-([https://raw.githubusercontent.com/astoeckel/si443x-driver/master/doc/RFM26W_433MHz_Transceiver_RPI.pdf](Link to PDF version))
+![Wiring diagram](doc/RFM26W_433MHz_Transceiver_RPI.png)
+([Link to PDF version](https://raw.githubusercontent.com/astoeckel/si443x-driver/master/doc/RFM26W_433MHz_Transceiver_RPI.pdf))
 
 In the above diagram, the RFM26W GPIO3 input is connected to GPIO pin 22 on the
 Raspberry Pi. The Raspberry Pi is responsible for the generation of the
@@ -35,7 +35,7 @@ The main program uses the `wiringPi` library for the Raspberry Pi GPIO pins and
 the CMake build system. Please install this library before continuing.
 
 To download, compile, and install the provided example program run
-```
+```bash
 # Download
 git clone https://github.com/astoeckel/si443x-driver
 
