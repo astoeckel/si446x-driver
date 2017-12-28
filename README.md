@@ -12,12 +12,12 @@ input pin on the Si443x module, making it a drop-in replacement for many cheap
 
 ## Usage with a Raspberry Pi
 
-The `main.cpp` provided with this repository brings the transceiver on a
-[RFM26W](https://www.pollin.de/p/funkmodul-hoperf-rfm26w-433-mhz-tx-rx-810311)
-module to a transmit-only state with a frequency of 443.92 MHz. The carrier is
-toggled on and off using the GPIO3 input on the RFM26W module. This frequency
-and mode of operation (OOK) is used by a variety of wirelessly controlled
-devices.
+The `main.cpp` provided with this repository brings the transceiver on a to a
+transmit-only state with a frequency of 443.92 MHz. In the test setup, the
+Si443x chip is located on a [RFM26W](https://www.pollin.de/p/funkmodul-hoperf-rfm26w-433-mhz-tx-rx-810311)
+module, and the carrier is toggled on ond off using the GPIO3 input. This
+frequency and mode of operation (OOK) is used by a variety of wirelessly
+controlled devices.
 
 The below wiring diagram shows how the RFM26W module should be wired to a
 Raspberry Pi if the `main.cpp` program is used.
@@ -33,7 +33,8 @@ transmitted binary signal on GPIO pin 22.
 ## Compilation and installation of the main program
 
 The main program uses the `wiringPi` library for the Raspberry Pi GPIO pins and
-the CMake build system. Please install this library before continuing.
+the CMake build system. Please install `wiringPi` before continuing,
+documentation on how to do this can be found [here](http://wiringpi.com/download-and-install/).
 
 To download, compile, and install the provided example program run
 ```bash
