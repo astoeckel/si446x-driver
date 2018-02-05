@@ -12,7 +12,7 @@ input pin on the Si443x module, making it a drop-in replacement for many cheap
 
 ## Usage with a Raspberry Pi
 
-The `main.cpp` provided with this repository brings the transceiver on a to a
+The `main.cpp` provided with this repository brings the transceiver to a
 transmit-only state with a frequency of 443.92 MHz. In the test setup, the
 Si443x chip is located on a [RFM26W](https://www.pollin.de/p/funkmodul-hoperf-rfm26w-433-mhz-tx-rx-810311)
 module, and the carrier is toggled on ond off using the GPIO3 input. This
