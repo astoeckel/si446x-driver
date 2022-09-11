@@ -1,20 +1,26 @@
-# Driver for the Silicon Labs Si443x wireless transceiver
+# Driver for the Silicon Labs Si446x wireless transceiver
+
+> **Note**  
+> Please see https://github.com/astoeckel/wireless_doorbell for more complete AVR code used to drive the Si446x chip.
+> Also note that chip used in conjunction with the code here has always been the `Si4463`, and *not* the `Si443x` series;
+> the code in this repository refers to the `443x` for reasons I no longer remember (might have been bad guessing on my side from the
+> HopeRF RFM26M manual).
 
 The code in this repository implements a generic driver for the Silicon Labs
-Si443x series of wireless transceivers. The code is tailored towards 8-bit
+Si446x series of wireless transceivers. The code is tailored towards 8-bit
 embedded systems such as AVR microcontrollers, however, as of now, only a
 backend targeting Linux on a Raspberry Pi is implemented.
 
 Note that the code in its current form is largely untested. The provided main
 program switches the transceiver to on-off-keying (OOK) mode triggered by a GPIO
-input pin on the Si443x module, making it a drop-in replacement for many cheap
+input pin on the Si446x module, making it a drop-in replacement for many cheap
 443.92 MHz OOK transmitter modules.
 
 ## Usage with a Raspberry Pi
 
 The `main.cpp` provided with this repository brings the transceiver to a
 transmit-only state with a frequency of 443.92 MHz. In the test setup, the
-Si443x chip is located on a [RFM26W](https://www.pollin.de/p/funkmodul-hoperf-rfm26w-433-mhz-tx-rx-810311)
+Si446x chip is located on a [RFM26W](https://www.pollin.de/p/funkmodul-hoperf-rfm26w-433-mhz-tx-rx-810311)
 module, and the carrier is toggled on ond off using the GPIO3 input. This
 frequency and mode of operation (OOK) is used by a variety of wirelessly
 controlled devices.
@@ -56,7 +62,7 @@ sudo systemctl start enable_transceiver
 ## License
 
 ```
-si443x-driver -- Driver for the Silabs Si443x wireless transceiver IC
+si446x-driver -- Driver for the Silabs Si446x wireless transceiver IC
 Copyright (C) 2015-2017  Andreas Stöckel
 
 This program is free software: you can redistribute it and/or modify
