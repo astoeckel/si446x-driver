@@ -5,7 +5,7 @@
 > Please see https://github.com/astoeckel/wireless_doorbell for more complete AVR code used to drive the Si446x chip.
 > Also note that chip used in conjunction with the code here has always been the `Si4463`, and *not* the `Si443x` series;
 > the code in this repository refers to the `443x` for reasons I no longer remember (might have been bad guessing on my side from the
-> HopeRF RFM26M manual).
+> HopeRF RFM26W “datasheet”).
 
 The code in this repository implements a generic driver for the Silicon Labs
 Si446x series of wireless transceivers. The code is tailored towards 8-bit
